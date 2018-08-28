@@ -338,7 +338,208 @@ void print_program(){
 /* Print the instruction at given memory address (in MIPS assembly format)    */
 /************************************************************/
 void print_instruction(uint32_t addr){
-	/*IMPLEMENT THIS*/
+	
+	uint32_t instr;
+	uint8_t command, flag = 0; 
+
+	//Get instr value
+	instr = mem_read_32(addr);
+
+	command = instr >> 26;
+	flag = 0;
+	
+	if (command == 0){
+		command = instr & 63;
+		flag = 1;
+	}
+	
+	if (command == 1){
+		command = (instr >> 16) & 31;
+		flag = 2;
+	}
+
+	//Parse
+	switch (command){
+		//ADD && LB
+		case 32:
+			if (flag == 0){
+				printf("LB\n");
+			} else {
+				printf("ADD\n");
+			}
+			break;
+		//ADDI && JR
+		case 8:
+			if (flag == 0){
+				printf("ADDI\n");
+			} else {
+				printf("JR\n");			
+			}			
+			break;
+		//ADDIU && JALR
+		case 9:
+			if (flag == 1){
+				printf("JALR\n");
+			} else {
+				printf("ADDIU\n");
+			}
+			break;
+		//ADDU && LH
+		case 33:
+			if (flag == 0){
+				printf("LH\n");
+			} else {
+				printf("ADDU\n");
+			}
+		//SUB
+		case 34:
+			printf("SUB\n");
+			break;
+		//SUBU
+		case 35:
+			if (flag == 0){
+				printf("LW\n");
+			} else {
+				printf("SUBU\n");
+			}			
+			break;
+		//MULT
+		case 24:
+			printf("MULT\n");
+			break;
+		//MULTU
+		case 25:
+			printf("MULTU\n");
+			break;
+		//DIV
+		case 26:
+			printf("DIV\n");
+			break;
+		//DIVU
+		case 27:
+			printf("DIVU\n");
+			break;
+		//AND
+		case 36:
+			printf("AND\n");
+			break;
+		//ANDI && SYSCALL
+		case 12:
+			if (flag == 0){
+				printf("ANDI\n");
+			} else {
+				printf("SYSCALL\n");
+			}
+			break;
+		//OR
+		case 37:
+			printf("OR\n");
+			break;
+		//ORI
+		case 13:
+			printf("ORI\n");
+			break;
+		//XOR
+		case 38:
+			printf("XOR\n");
+			break;
+		//XORI
+		case 14:
+			printf("XORI\n");
+			break;
+		//NOR
+		case 39:
+			printf("NOR\n");
+			break;
+		//SLT
+		case 42:
+			printf("SLT\n");
+			break;
+		//SLTI
+		case 10:
+			printf("SLTI\n");
+			break;
+		//SLL && BLTZ
+		case 0:
+			if (flag == 2){
+				printf("BLTZ\n");
+			} else {			
+				printf("SLL\n");
+			}
+			break;
+		//SRL && J
+		case 2:
+			if (flag == 0){
+				printf("J\n");
+			} else {
+				printf("SRL\n");
+			}
+			break;
+		//SRA && JAL
+		case 3:
+			if (flag == 0){
+				printf("JAl\n");
+			} else {
+				printf("SRA\n");
+			}
+			break;
+		//LUI
+		case 15:
+			printf("LUI\n");
+			break;
+		//SW
+		case 43:
+			printf("SW\n");
+			break;
+		//SB
+		case 40:
+			printf("SB\n");
+			break;
+		//SH
+		case 41:
+			printf("SH\n");
+			break;
+		//MFHI
+		case 16:
+			printf("MFHI\n");
+			break;
+		//MFLO
+		case 18:
+			printf("MFLO\n");
+			break;
+		//MTHI
+		case 17:
+			printf("MTHI\n");
+			break;
+		//MTLO
+		case 19:
+			printf("MTLO\n");
+			break;
+		//BEQ
+		case 4:
+			printf("BEQ\n");
+			break;
+		//BNE
+		case 5:
+			printf("BNE\n");
+			break;
+		//BLEZ
+		case 6:
+			printf("BLEZ\n");
+			break;
+		//BGEZ
+		case 1:
+			printf("BGEZ\n");
+			break;
+		//BGTZ
+		case 7:
+			printf("BGTZ\n");
+			break;
+		default: 
+			printf("\n");
+			break;
+
+	}
 }
 
 /***************************************************************/
