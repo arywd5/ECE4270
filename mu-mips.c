@@ -340,7 +340,8 @@ void print_program(){
 void print_instruction(uint32_t addr){
 	
 	uint32_t instr;
-	uint8_t command, flag = 0; 
+	uint8_t command, flag = 0, rs, rt, rd, sa; 
+	uint16_t immed;
 
 	//Get instr value
 	instr = mem_read_32(addr);
@@ -358,188 +359,197 @@ void print_instruction(uint32_t addr){
 		flag = 2;
 	}
 
+	rs = (instr >> 21) & 31;
+	rt = (instr >> 16) & 31;
+	rd = (instr >> 11) & 31;
+	sa = (instr >> 6) & 31;
+	immed = instr & 0x0FFFF;
+
 	//Parse
 	switch (command){
 		//ADD && LB
 		case 32:
 			if (flag == 0){
-				printf("LB\n");
+				printf("LB \t BASE = %d \t RT = %d\n", rs, rt);
 			} else {
-				printf("ADD\n");
+				printf("ADD \t RS = %d \t RT = %d \t RD = %d\n", rs, rt, rd);
 			}
 			break;
 		//ADDI && JR
 		case 8:
 			if (flag == 0){
-				printf("ADDI\n");
+				printf("ADDI \t RS = %d \t RT = %d \t IMMEDIATE = %d\n", rs, rt, immed);
 			} else {
-				printf("JR\n");			
+				printf("JR \t RS = %d\n", rs);			
 			}			
 			break;
 		//ADDIU && JALR
 		case 9:
 			if (flag == 1){
-				printf("JALR\n");
+				printf("JALR \t RS = %d \t RD = %d\n", rs, rd);
 			} else {
-				printf("ADDIU\n");
+				printf("ADDIU \t RS = %d \t RT = %d \t IMMEDIATE = %d\n", rs, rt, immed);
 			}
 			break;
 		//ADDU && LH
 		case 33:
 			if (flag == 0){
-				printf("LH\n");
+				printf("LH \t BASE = %d \t RT = %d \t OFFSET = %d\n", rs, rt, immed);
 			} else {
-				printf("ADDU\n");
+				printf("ADDU \t RS = %d \t RT = %d \t RD = %d\n", rs, rt, rd);
 			}
 		//SUB
 		case 34:
-			printf("SUB\n");
+			printf("SUB \t RS = %d \t RT = %d \t RD = %d\n", rs, rt, rd);
 			break;
 		//SUBU
 		case 35:
 			if (flag == 0){
-				printf("LW\n");
+				printf("LW \t BASE = %d \t RT = %d \t OFFSET = %d\n", rs, rt, immed);
 			} else {
-				printf("SUBU\n");
+				printf("SUBU \t RS = %d \t RT = %d \t RD = %d\n", rs, rt, rd);
 			}			
 			break;
 		//MULT
 		case 24:
-			printf("MULT\n");
+			printf("MULT \t RS = %d \t RT = %d\n", rs, rt);
 			break;
 		//MULTU
 		case 25:
-			printf("MULTU\n");
+			printf("MULTU \t RS = %d \t RT = %d\n", rs, rt);
 			break;
 		//DIV
 		case 26:
-			printf("DIV\n");
+			printf("DIV \t RS = %d \t RT = %d\n", rs, rt);
 			break;
 		//DIVU
 		case 27:
-			printf("DIVU\n");
+			printf("DIVU \t RS = %d \t RT = %d\n", rs, rt);
 			break;
 		//AND
 		case 36:
-			printf("AND\n");
+			printf("AND \t RS = %d \t RT = %d \t RD = %d\n", rs, rt, rd);
 			break;
 		//ANDI && SYSCALL
 		case 12:
 			if (flag == 0){
-				printf("ANDI\n");
+				printf("ANDI \t RS = %d \t RT = %d \t IMMEDIATE = %d\n", rs, rt, immed);
 			} else {
 				printf("SYSCALL\n");
 			}
 			break;
 		//OR
 		case 37:
-			printf("OR\n");
+			printf("OR \t RS = %d \t RT = %d \t RD = %d\n", rs, rt, rd);
 			break;
 		//ORI
 		case 13:
-			printf("ORI\n");
+			printf("ORI \t RS = %d \t RT = %d \t IMMEDIATE = %d\n", rs, rt, immed);
 			break;
 		//XOR
 		case 38:
-			printf("XOR\n");
+			printf("XOR \t RS = %d \t RT = %d \t RD = %d\n", rs, rt, rd);
 			break;
 		//XORI
 		case 14:
-			printf("XORI\n");
+			printf("XORI \t RS = %d \t RT = %d \t IMMEDIATE = %d\n", rs, rt, immed);
 			break;
 		//NOR
 		case 39:
-			printf("NOR\n");
+			printf("NOR \t RS = %d \t RT = %d \t RD = %d\n", rs, rt, rd);
 			break;
 		//SLT
 		case 42:
-			printf("SLT\n");
+			printf("SLT \t RS = %d \t RT = %d \t RD = %d\n", rs, rt, rd);
 			break;
 		//SLTI
 		case 10:
-			printf("SLTI\n");
+			printf("SLTI \t RS = %d \t RT = %d \t IMMEDIATE = %d\n", rs, rt, immed);
 			break;
 		//SLL && BLTZ
 		case 0:
 			if (flag == 2){
-				printf("BLTZ\n");
+				printf("BLTZ \t RS = %d \t OFFSET = %d\n", rs, immed);
 			} else {			
-				printf("SLL\n");
+				printf("SLL \t RT = %d \t RD = %d \t SA = %d\n", rt, rd, sa);
 			}
 			break;
 		//SRL && J
 		case 2:
 			if (flag == 0){
-				printf("J\n");
+				command = instr & 0x3FFFFFF;
+				printf("J\tTarget: %d\n", command);
 			} else {
-				printf("SRL\n");
+				printf("SRL \t RT = %d \t RD = %d \t SA = %d\n", rt, rd, sa);
 			}
 			break;
 		//SRA && JAL
 		case 3:
 			if (flag == 0){
-				printf("JAl\n");
+				command = instr & 0x3FFFFFF;
+				printf("JAL\tTarget: %d\n", command);
 			} else {
-				printf("SRA\n");
+				printf("SRA \t RT = %d \t RD = %d \t SA = %d\n", rt, rd, sa);
 			}
 			break;
 		//LUI
 		case 15:
-			printf("LUI\n");
+			printf("LUI \t RT = %d \t IMMEDIATE = %d\n", rt, immed);
 			break;
 		//SW
 		case 43:
-			printf("SW\n");
+			printf("SW \t BASE = %d \t RT = %d \t OFFSET = %d\n", rs, rt, immed);
 			break;
 		//SB
 		case 40:
-			printf("SB\n");
+			printf("SB \t BASE = %d \t RT = %d \t OFFSET = %d\n", rs, rt, immed);
 			break;
 		//SH
 		case 41:
-			printf("SH\n");
+			printf("SH \t BASE = %d \t RT = %d \t OFFSET = %d\n", rs, rt, immed);
 			break;
 		//MFHI
 		case 16:
-			printf("MFHI\n");
+			printf("MFHI \t RD = %d\n", rd);
 			break;
 		//MFLO
 		case 18:
-			printf("MFLO\n");
+			printf("MFLO \t RD = %d\n", rd);
 			break;
 		//MTHI
 		case 17:
-			printf("MTHI\n");
+			printf("MTHI \t RS = %d\n", rs);
 			break;
 		//MTLO
 		case 19:
-			printf("MTLO\n");
+			printf("MTLO \t RS = %d\n", rs);
 			break;
 		//BEQ
 		case 4:
-			printf("BEQ\n");
+			printf("BEQ \t RS = %d \t RT = %d \t OFFSET = %d\n", rs, rt, immed);
 			break;
 		//BNE
 		case 5:
-			printf("BNE\n");
+			printf("BNE \t RS = %d \t RT = %d \t OFFSET = %d\n", rs, rt, immed);
 			break;
 		//BLEZ
 		case 6:
-			printf("BLEZ\n");
+			printf("BLEZ \t RS = %d \t OFFSET = %d\n", rs, immed);
 			break;
 		//BGEZ
 		case 1:
-			printf("BGEZ\n");
+			printf("BGEZ \t RS = %d \t OFFSET = %d\n", rs, immed);
 			break;
 		//BGTZ
 		case 7:
-			printf("BGTZ\n");
+			printf("BGTZ \t RS = %d \t OFFSET = %d\n", rs, immed);
 			break;
 		default: 
 			printf("\n");
 			break;
-
 	}
+
+	
 }
 
 /***************************************************************/
