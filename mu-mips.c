@@ -339,19 +339,24 @@ void handle_instruction()
 		case 32:
 			if (flag == 0){	//LB
 				temp = mem_read_32(rs + immed);	//Base + offset
-				CURRENT_STATE.REGS[rt] = temp;  //Put memory into rt
+				NEXT_STATE.REGS[rt] = temp;  //Put memory into rt
 			} else {	//Add
-				temp = mem_read_32(rs);
-				temp2 = mem_read_32(rt);
+				//temp = mem_read_32(rs + immed);
+				temp = NEXT_STATE.REGS[rs];
+				printf("Temp = %zu\n", temp);
+				//temp2 = mem_read_32(rt + immed);
+				temp = NEXT_STATE.REGS[rt];
+				printf("Temp2 = %zu\n", temp2);
 				temp3 = temp + temp2;
+				printf("Temp3 = %zu\n", temp3);
 				if ( ((temp3 >> 30) == 1) || ((temp3 >> 30) == 2) ){
 					//Overflow
+					printf("Overflow\n");
 				} else {
-					CURRENT_STATE.REGS[rd] = temp3;
+					NEXT_STATE.REGS[rd] = temp3;
 				}
 			}
-			CURRENT_STATE.PC += 4;
-			NEXT_STATE = CURRENT_STATE;
+			NEXT_STATE.PC += 4;
 			break;
 		//ADDI && JR
 		case 8:
@@ -360,19 +365,18 @@ void handle_instruction()
 			} else {	//JR
 				temp = mem_read_32(rs);
 				if ((temp && 0x00000003) == 0){
-					CURRENT_STATE.PC += temp;
+					NEXT_STATE.PC += temp;
 				} else {
 					//Exception	
 				}
-			}	
-			NEXT_STATE = CURRENT_STATE;		
+			}			
 			break;
 		//ADDIU && JALR
 		case 9:
 			if (flag == 1){//JALR
 				
 			} else {	//ADDIU
-				
+				NEXT_STATE.PC += 4;
 			}
 			break;
 		//ADDU && LH
@@ -389,7 +393,7 @@ void handle_instruction()
 		//SUBU
 		case 35:
 			if (flag == 0){//LW
-				
+				NEXT_STATE.PC += 4;
 			} else {//SUBU
 				
 			}			
@@ -419,7 +423,7 @@ void handle_instruction()
 			if (flag == 0){	//ANDI
 				
 			} else {	//SYSCALL
-				
+				RUN_FLAG = FALSE;
 			}
 			break;
 		//OR
@@ -478,11 +482,11 @@ void handle_instruction()
 			break;
 		//LUI
 		case 15:
-			
+			NEXT_STATE.PC += 4;
 			break;
 		//SW
 		case 43:
-			
+			NEXT_STATE.PC += 4;
 			break;
 		//SB
 		case 40:
