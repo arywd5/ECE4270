@@ -342,10 +342,10 @@ void handle_instruction()
 				NEXT_STATE.REGS[rt] = temp;  //Put memory into rt
 			} else {	//Add
 				//temp = mem_read_32(rs + immed);
-				temp = NEXT_STATE.REGS[rs];
+				temp = rs;
 				printf("Temp = %zu\n", temp);
 				//temp2 = mem_read_32(rt + immed);
-				temp = NEXT_STATE.REGS[rt];
+				temp2 = rt;
 				printf("Temp2 = %zu\n", temp2);
 				temp3 = temp + temp2;
 				printf("Temp3 = %zu\n", temp3);
