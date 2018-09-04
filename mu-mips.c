@@ -305,8 +305,233 @@ void load_program() {
 /************************************************************/
 void handle_instruction()
 {
-	/*IMPLEMENT THIS*/
-	/* execute one instruction at a time. Use/update CURRENT_STATE and and NEXT_STATE, as necessary.*/
+	//Current state/next state
+
+	uint32_t instr, temp, temp2, temp3;
+	uint8_t command, flag = 0, rs, rt, rd, sa; 
+	uint16_t immed;
+
+	//Get instr value
+	instr = mem_read_32(CURRENT_STATE.REGS[28] + CURRENT_STATE.PC);
+
+	command = instr >> 26;
+	flag = 0;
+	
+	if (command == 0){
+		command = instr & 63;
+		flag = 1;
+	}
+	
+	if (command == 1){
+		command = (instr >> 16) & 31;
+		flag = 2;
+	}
+
+	rs = (instr >> 21) & 31;
+	rt = (instr >> 16) & 31;
+	rd = (instr >> 11) & 31;
+	sa = (instr >> 6) & 31;
+	immed = instr & 0x0FFFF;
+
+	//Parse
+	switch (command){
+		//ADD && LB
+		case 32:
+			if (flag == 0){	//LB
+				temp = mem_read_32(rs + immed);	//Base + offset
+				CURRENT_STATE.REGS[rt] = temp;  //Put memory into rt
+			} else {	//Add
+				temp = mem_read_32(rs);
+				temp2 = mem_read_32(rt);
+				temp3 = temp + temp2;
+				if ( ((temp3 >> 30) == 1) || ((temp3 >> 30) == 2) ){
+					//Overflow
+				} else {
+					CURRENT_STATE.REGS[rd] = temp3;
+				}
+			}
+			CURRENT_STATE.PC += 4;
+			NEXT_STATE = CURRENT_STATE;
+			break;
+		//ADDI && JR
+		case 8:
+			if (flag == 0){ //ADDI
+				
+			} else {	//JR
+				temp = mem_read_32(rs);
+				if ((temp && 0x00000003) == 0){
+					CURRENT_STATE.PC += temp;
+				} else {
+					//Exception	
+				}
+			}	
+			NEXT_STATE = CURRENT_STATE;		
+			break;
+		//ADDIU && JALR
+		case 9:
+			if (flag == 1){//JALR
+				
+			} else {	//ADDIU
+				
+			}
+			break;
+		//ADDU && LH
+		case 33:
+			if (flag == 0){//LH
+				
+			} else {	//ADDU
+				
+			}
+		//SUB
+		case 34:
+			
+			break;
+		//SUBU
+		case 35:
+			if (flag == 0){//LW
+				
+			} else {//SUBU
+				
+			}			
+			break;
+		//MULT
+		case 24:	
+			
+			break;
+		//MULTU
+		case 25:
+			
+			break;
+		//DIV
+		case 26:
+			
+			break;
+		//DIVU
+		case 27:
+			
+			break;
+		//AND
+		case 36:
+			
+			break;
+		//ANDI && SYSCALL
+		case 12:
+			if (flag == 0){	//ANDI
+				
+			} else {	//SYSCALL
+				
+			}
+			break;
+		//OR
+		case 37:
+			
+			break;
+		//ORI
+		case 13:
+			
+			break;
+		//XOR
+		case 38:
+			
+			break;
+		//XORI
+		case 14:
+			
+			break;
+		//NOR
+		case 39:
+			
+			break;
+		//SLT
+		case 42:
+			
+			break;
+		//SLTI
+		case 10:
+			
+			break;
+		//SLL && BLTZ
+		case 0:
+			if (flag == 2){//BLTZ
+				
+			} else {	//SLL		
+				
+			}
+			break;
+		//SRL && J
+		case 2:
+			if (flag == 0){//J
+				command = instr & 0x3FFFFFF;
+				
+			} else {	//SRL
+				
+			}
+			break;
+		//SRA && JAL
+		case 3:
+			if (flag == 0){//JAL
+				command = instr & 0x3FFFFFF;
+				
+			} else {	//SRA
+				
+			}
+			break;
+		//LUI
+		case 15:
+			
+			break;
+		//SW
+		case 43:
+			
+			break;
+		//SB
+		case 40:
+			
+			break;
+		//SH
+		case 41:
+			
+			break;
+		//MFHI
+		case 16:
+			
+			break;
+		//MFLO
+		case 18:
+			
+			break;
+		//MTHI
+		case 17:
+			
+			break;
+		//MTLO
+		case 19:
+			
+			break;
+		//BEQ
+		case 4:
+			
+			break;
+		//BNE
+		case 5:
+			
+			break;
+		//BLEZ
+		case 6:
+			
+			break;
+		//BGEZ
+		case 1:
+			
+			break;
+		//BGTZ
+		case 7:
+			
+			break;
+		default: 
+			
+			break;
+	}
 }
 
 
@@ -548,8 +773,6 @@ void print_instruction(uint32_t addr){
 			printf("\n");
 			break;
 	}
-
-	
 }
 
 /***************************************************************/
